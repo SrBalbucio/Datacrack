@@ -1,0 +1,5 @@
+#Datacrack Configuration - Criado por SrBalbucio (o brabo)
+
+#Socket Section - Configurações relacionadas ao Socket (Server)
+Socket:
+  Porta: 25565 #Porta de conexão

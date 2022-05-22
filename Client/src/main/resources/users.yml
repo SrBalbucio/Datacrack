@@ -1,0 +1,32 @@
+#Datacrack Users - Criado por SrBalbucio (o brabo)
+#Documentação: https://docs.google.com/document/d/1uMc1IVH3oqnJBq9htZlFIJs7cmE5d8pVv_J4xTO3E-w/edit?usp=drivesdk
+
+#Adicione os usuários do Database aqui, você pode deletar o usuário padrão
+
+#Permissões: (Coloque somente as permissões necessárias)
+# read.rootpack.<name> - Permissão de ler os dados de RootDataPack
+# write.rootpack.<name> - Permissão de escrever dados no RootDataPack
+# all.rootpack.<name> - Permissão total em um RootDataPack
+# read.userpack - Permissão de ler os dados de UserDataPacks
+# write.userpack - Permissão de escrever dados nos UserDataPacks
+# all.userpack - Permissão total nos UserDataPacks
+# read.datapack.<pathAndName> - Permissão de ler os dados de um DataPack (Ex. de Path: Users,Sr_Balbucio,SkyWars)
+# write.datapack.<pathAndName> - Permissão de escrever dados no DataPack (Ex. de Path: Users,Sr_Balbucio/SkyWars)
+# all.datapack.<name> - Permissão total em um DataPack (Ex. de Path: Users,Sr_Balbucio,SkyWars)
+# use.tempdata - Permissão de escrever e ler TempDataPacks
+# createNewUsers - Permissão de criar novos usuários
+
+users:
+  Admin:
+    username: "Admin"
+    password: "Admin"
+    isAdmin: true
+    permissions:
+      - "createNewUsers"
+  defaultUser:
+    username: "defaultUser"
+    password: "123"
+    isAdmin: false
+    permissions:
+      - "all.rootpack.root"
+      - "all.userpack"
