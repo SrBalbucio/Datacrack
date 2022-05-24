@@ -41,27 +41,39 @@ public class WebSocket {
                     switch (method) {
                         case "getrootpath":
                             System.out.print("\nUm request GET ROOT (" + path + ") foi executado por " + username + ".");
-                            if (!user.getPermissions().contains("all.rootpack." + path) && !user.getPermissions().contains("read.rootpack." + path) && !user.isAdmin()) {
+                            if (!Main.getConfig().getBoolean("pathEqualToUsernameAllow") && !user.getPermissions().contains("all.rootpack." + path) && !user.getPermissions().contains("read.rootpack." + path) && !user.isAdmin()) {
                                 return new JSONObject().put("erro", true).put("erroMessage", "Esse usuário não tem permissão para acessar esse RootDataPack!").put("type", "UserInsufficientPermission");
+                            }
+                            if(Main.getConfig().getBoolean("pathEqualToUsernameAllow") && !path.equals(username)){
+                                return new JSONObject().put("erro", true).put("erroMessage", "Esse usuário não tem permissão para acessar esse DataPack!").put("type", "UserInsufficientPermission");
                             }
                             return DataManager.getRootPack(path);
                         case "putrootpath":
                             System.out.print("\nUm request PUT ROOT (" + path + ") foi executado por " + username + ".");
-                            if (!user.getPermissions().contains("all.rootpack." + path) && !user.getPermissions().contains("write.rootpack." + path) && !user.isAdmin()) {
+                            if (!Main.getConfig().getBoolean("pathEqualToUsernameAllow") && !user.getPermissions().contains("all.rootpack." + path) && !user.getPermissions().contains("write.rootpack." + path) && !user.isAdmin()) {
                                 return new JSONObject().put("erro", true).put("erroMessage", "Esse usuário não tem permissão para acessar esse RootDataPack!").put("type", "UserInsufficientPermission");
+                            }
+                            if(Main.getConfig().getBoolean("pathEqualToUsernameAllow") && !path.equals(username)){
+                                return new JSONObject().put("erro", true).put("erroMessage", "Esse usuário não tem permissão para acessar esse DataPack!").put("type", "UserInsufficientPermission");
                             }
                             source = jsonPayload.getJSONObject("source");
                             DataManager.updateRootPack(path, source);
                             return new JSONObject().put("erro", false);
                         case "getdatapack":
                             System.out.print("\nUm request GET DATA (" + path + ") foi executado por " + username + ".");
-                            if (!user.getPermissions().contains("all.datapack." + path.replace("/", ",")) && !user.getPermissions().contains("read.datapack." + path) && !user.isAdmin()) {
+                            if (!Main.getConfig().getBoolean("pathEqualToUsernameAllow") && !user.getPermissions().contains("all.datapack." + path.replace("/", ",")) && !user.getPermissions().contains("read.datapack." + path) && !user.isAdmin()) {
+                                return new JSONObject().put("erro", true).put("erroMessage", "Esse usuário não tem permissão para acessar esse DataPack!").put("type", "UserInsufficientPermission");
+                            }
+                            if(Main.getConfig().getBoolean("pathEqualToUsernameAllow") && !path.equals(username)){
                                 return new JSONObject().put("erro", true).put("erroMessage", "Esse usuário não tem permissão para acessar esse DataPack!").put("type", "UserInsufficientPermission");
                             }
                             return DataManager.getDataPack(path);
                         case "putdatapack":
                             System.out.print("\nUm request PUT DATA (" + path + ") foi executado por " + username + ".");
-                            if (!user.getPermissions().contains("all.datapack." + path.replace("/", ",")) && !user.getPermissions().contains("write.datapack." + path) && !user.isAdmin()) {
+                            if (!Main.getConfig().getBoolean("pathEqualToUsernameAllow") && !user.getPermissions().contains("all.datapack." + path.replace("/", ",")) && !user.getPermissions().contains("write.datapack." + path) && !user.isAdmin()) {
+                                return new JSONObject().put("erro", true).put("erroMessage", "Esse usuário não tem permissão para acessar esse DataPack!").put("type", "UserInsufficientPermission");
+                            }
+                            if(Main.getConfig().getBoolean("pathEqualToUsernameAllow") && !path.equals(username)){
                                 return new JSONObject().put("erro", true).put("erroMessage", "Esse usuário não tem permissão para acessar esse DataPack!").put("type", "UserInsufficientPermission");
                             }
                             source = jsonPayload.getJSONObject("source");
@@ -100,7 +112,7 @@ public class WebSocket {
                             return new JSONObject().put("erro", false);
                         case "getuserpack":
                             System.out.print("\nUm request GET USER (" + path + ") foi executado por " + username + ".");
-                            if (!user.getPermissions().contains("all.userpack." + path) && !user.getPermissions().contains("read.userpack." + path)) {
+                            if (!path.equals(uuid) && !user.getPermissions().contains("all.userpack." + path) && !user.getPermissions().contains("read.userpack." + path)) {
                                 return new JSONObject().put("erro", true).put("erroMessage", "Esse usuário não tem permissão para acessar esse RootDataPack!").put("type", "UserInsufficientPermission");
                             }
                             return DataManager.getUserDataPack(path);

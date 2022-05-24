@@ -182,12 +182,18 @@ public class RootDataPack {
         }
         return dataPacks;
     }
+    
+    public boolean contains(String key) throws InvalidCredentialException, RequestErrorException, DataNotExistsException, UserInsufficientPermissionException {
+        reload();
+        return json.has(key);
+    }
+
     public void update() throws UserInsufficientPermissionException, RequestErrorException, InvalidCredentialException {
-        Datacrack.getInstance().getSocketManager().updateSource(SocketInstance.SetterAction.PUTROOTPATH, name, json);
+        Datacrack.getInstance().getManager().updateSource(SocketInstance.SetterAction.PUTROOTPATH, name, json);
     }
 
     public void reload() throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
-        JSONObject response = Datacrack.getInstance().getSocketManager().getSource(SocketInstance.GetterAction.GETROOTPATH, name);
+        JSONObject response = Datacrack.getInstance().getManager().getSource(SocketInstance.GetterAction.GETROOTPATH, name);
         if(response == null){ return; }
         this.json = response;
     }

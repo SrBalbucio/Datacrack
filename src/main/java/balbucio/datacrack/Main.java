@@ -52,6 +52,10 @@ public class Main {
         return userManager;
     }
 
+    public static YamlConfiguration getConfig(){
+        return configuration;
+    }
+
     private void loadConfigurations(){
         try {
             if (!folder.exists()) {

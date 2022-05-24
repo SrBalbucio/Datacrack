@@ -38,10 +38,10 @@ public class SocketInstance {
             throw new RequestErrorException(response.getString("erroMessage"), action, argument);
         }
         if(response.has("erro") && response.getString("type").equalsIgnoreCase("UserInsufficientPermission")){
-            throw new UserInsufficientPermissionException(response.getString("erroMessage"), Datacrack.getInstance().getSocketManager().getUserBySocket(this));
+            throw new UserInsufficientPermissionException(response.getString("erroMessage"), Datacrack.getInstance().getManager().getUserBySocket(this));
         }
         if(response.has("erro") && response.getString("type").equalsIgnoreCase("InvalidCredentialException")){
-            throw new InvalidCredentialException(response.getString("erroMessage"), Datacrack.getInstance().getSocketManager().getUserBySocket(this));
+            throw new InvalidCredentialException(response.getString("erroMessage"), Datacrack.getInstance().getManager().getUserBySocket(this));
         }
         if(response.has("erro") && response.getString("type").equalsIgnoreCase("TempDataNotExists")){
             throw new DataNotExistsException(response.getString("erroMessage"), "");
@@ -58,10 +58,10 @@ public class SocketInstance {
             throw new RequestErrorException(response.getString("erroMessage"), action, argument);
         }
         if(response.getBoolean("erro") && response.getString("type").equalsIgnoreCase("UserInsufficientPermission")){
-            throw new UserInsufficientPermissionException(response.getString("erroMessage"), Datacrack.getInstance().getSocketManager().getUserBySocket(this));
+            throw new UserInsufficientPermissionException(response.getString("erroMessage"), Datacrack.getInstance().getManager().getUserBySocket(this));
         }
         if(response.has("erro") && response.getString("type").equalsIgnoreCase("InvalidCredentialException")){
-            throw new InvalidCredentialException(response.getString("erroMessage"), Datacrack.getInstance().getSocketManager().getUserBySocket(this));
+            throw new InvalidCredentialException(response.getString("erroMessage"), Datacrack.getInstance().getManager().getUserBySocket(this));
         }
     }
 

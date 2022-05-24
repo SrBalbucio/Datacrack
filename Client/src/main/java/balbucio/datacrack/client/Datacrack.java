@@ -31,7 +31,7 @@ public class Datacrack {
         Datacrack.instance = instance;
     }
 
-    public Manager getSocketManager(){
+    public Manager getManager(){
         return manager;
     }
 

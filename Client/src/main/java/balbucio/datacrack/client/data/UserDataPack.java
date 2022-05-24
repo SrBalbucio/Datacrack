@@ -25,7 +25,7 @@ public class UserDataPack {
     private User user;
 
     public UserDataPack(User user) throws InvalidCredentialException, RequestErrorException, DataNotExistsException, UserInsufficientPermissionException {
-        this.json = Datacrack.getInstance().getSocketManager().getSource(SocketInstance.GetterAction.GETUSERPACK, user.getUUID().toString());
+        this.json = Datacrack.getInstance().getManager().getSource(SocketInstance.GetterAction.GETUSERPACK, user.getUUID().toString());
         this.user = user;
     }
 
@@ -140,22 +140,17 @@ public class UserDataPack {
         return Arrays.asList(json.getString(key).split("-"));
     }
 
-    public List<DataPack> getAllDataPacks() throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
+    public boolean contains(String key) throws InvalidCredentialException, RequestErrorException, DataNotExistsException, UserInsufficientPermissionException {
         reload();
-        List<DataPack> dataPacks = new ArrayList<>();
-        for(String key : json.keySet()){
-            if(key.contains("_datapack")){
-                dataPacks.add(new DataPack(json.getJSONObject(key)));
-            }
-        }
-        return dataPacks;
+        return json.has(key);
     }
+    
     public void update() throws UserInsufficientPermissionException, RequestErrorException, InvalidCredentialException {
-        Datacrack.getInstance().getSocketManager().updateSource(SocketInstance.SetterAction.PUTUSERPACK, user.getUUID().toString(), json);
+        Datacrack.getInstance().getManager().updateSource(SocketInstance.SetterAction.PUTUSERPACK, user.getUUID().toString(), json);
     }
 
     public void reload() throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
-        JSONObject response = Datacrack.getInstance().getSocketManager().getSource(SocketInstance.GetterAction.GETUSERPACK, user.getUUID().toString());
+        JSONObject response = Datacrack.getInstance().getManager().getSource(SocketInstance.GetterAction.GETUSERPACK, user.getUUID().toString());
         if(response == null){ return; }
         this.json = response;
     }

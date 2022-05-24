@@ -21,7 +21,7 @@ public class DataPack {
     private String name;
     private String path;
 
-    public DataPack(JSONObject json){
+    public DataPack(JSONObject json) {
         this.json = json;
         this.name = json.getString("name");
         this.path = json.getString("path");
@@ -37,8 +37,10 @@ public class DataPack {
 
     public DataPack getDataPack(String name) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
         reload();
-        if(!json.has(name+"_datapack")){ throw new DataNotExistsException("O DataPack "+name+" não existe!", name); }
-        return new DataPack(json.getJSONObject(name+"_datapack"));
+        if (!json.has(name + "_datapack")) {
+            throw new DataNotExistsException("O DataPack " + name + " não existe!", name);
+        }
+        return new DataPack(json.getJSONObject(name + "_datapack"));
     }
 
     public DataPack createDataPack(String name) throws UserInsufficientPermissionException, RequestErrorException, DataPackLimitException, DataNotExistsException, InvalidCredentialException {
@@ -47,12 +49,13 @@ public class DataPack {
             if (json.has(name + "_datapack")) {
                 return getDataPack(name);
             }
-        } catch (DataNotExistsException e){ }
-        if(this.path.split(",").length == 2){
+        } catch (DataNotExistsException e) {
+        }
+        if (this.path.split(",").length == 2) {
             throw new DataPackLimitException("O DataPack não pode ser criado dentro de 2 outros DataPacks.", name);
         }
-        DataPack pack = new DataPack(name, this.path+","+this.name);
-        json.put(name+"_datapack", pack.getSource());
+        DataPack pack = new DataPack(name, this.path + "," + this.name);
+        json.put(name + "_datapack", pack.getSource());
         update();
         return pack;
     }
@@ -109,11 +112,11 @@ public class DataPack {
     public DataPack setStringList(String key, List<String> value) throws InvalidCredentialException, RequestErrorException, DataNotExistsException, UserInsufficientPermissionException {
         reload();
         String list = "";
-        for(String a : value){
-            if(list.equalsIgnoreCase("")){
+        for (String a : value) {
+            if (list.equalsIgnoreCase("")) {
                 list = a;
-            } else{
-                list = list+"-"+a;
+            } else {
+                list = list + "-" + a;
             }
         }
         json.put(key, list);
@@ -123,82 +126,105 @@ public class DataPack {
 
     public Object get(String key) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
         reload();
-        if(!json.has(key)){ throw new DataNotExistsException("O Dado "+key+" não existe!", key); }
+        if (!json.has(key)) {
+            throw new DataNotExistsException("O Dado " + key + " não existe!", key);
+        }
         return json.get(key);
     }
 
     public String getString(String key) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
         reload();
-        if(!json.has(key)){ throw new DataNotExistsException("O Dado "+key+" não existe!", key); }
+        if (!json.has(key)) {
+            throw new DataNotExistsException("O Dado " + key + " não existe!", key);
+        }
         return json.getString(key);
     }
 
     public Integer getInt(String key) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
         reload();
-        if(!json.has(key)){ throw new DataNotExistsException("O Dado "+key+" não existe!", key); }
+        if (!json.has(key)) {
+            throw new DataNotExistsException("O Dado " + key + " não existe!", key);
+        }
         return json.getInt(key);
     }
 
     public Float getFloat(String key) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
         reload();
-        if(!json.has(key)){ throw new DataNotExistsException("O Dado "+key+" não existe!", key); }
+        if (!json.has(key)) {
+            throw new DataNotExistsException("O Dado " + key + " não existe!", key);
+        }
         return json.getFloat(key);
     }
 
     public Double getDouble(String key) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
         reload();
-        if(!json.has(key)){ throw new DataNotExistsException("O Dado "+key+" não existe!", key); }
+        if (!json.has(key)) {
+            throw new DataNotExistsException("O Dado " + key + " não existe!", key);
+        }
         return json.getDouble(key);
     }
 
     public Long getLong(String key) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
         reload();
-        if(!json.has(key)){ throw new DataNotExistsException("O Dado "+key+" não existe!", key); }
+        if (!json.has(key)) {
+            throw new DataNotExistsException("O Dado " + key + " não existe!", key);
+        }
         return json.getLong(key);
     }
+
     public Boolean getBoolean(String key) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
         reload();
-        if(!json.has(key)){ throw new DataNotExistsException("O Dado "+key+" não existe!", key); }
+        if (!json.has(key)) {
+            throw new DataNotExistsException("O Dado " + key + " não existe!", key);
+        }
         return json.getBoolean(key);
     }
 
     public List<String> getStringList(String key) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
         reload();
-        if(!json.has(key)){  throw new DataNotExistsException("O Dado "+key+" não existe!", key); }
+        if (!json.has(key)) {
+            throw new DataNotExistsException("O Dado " + key + " não existe!", key);
+        }
         return Arrays.asList(json.getString(key).split("-"));
     }
 
     public List<DataPack> getAllDataPacks() throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
         reload();
         List<DataPack> dataPacks = new ArrayList<>();
-        for(String key : json.keySet()){
-            if(key.contains("_datapack")){
+        for (String key : json.keySet()) {
+            if (key.contains("_datapack")) {
                 dataPacks.add(new DataPack(json.getJSONObject(key)));
             }
         }
         return dataPacks;
     }
 
+    public boolean contains(String key) throws InvalidCredentialException, RequestErrorException, DataNotExistsException, UserInsufficientPermissionException {
+        reload();
+        return json.has(key);
+    }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public String getPath(){
+    public String getPath() {
         return path;
     }
 
-    public JSONObject getSource(){
+    public JSONObject getSource() {
         return json;
     }
 
     public void update() throws UserInsufficientPermissionException, RequestErrorException, InvalidCredentialException {
-        Datacrack.getInstance().getSocketManager().updateSource(SocketInstance.SetterAction.PUTDATAPACK, path+"/"+name, json);
+        Datacrack.getInstance().getManager().updateSource(SocketInstance.SetterAction.PUTDATAPACK, path + "/" + name, json);
     }
 
     public void reload() throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
-        JSONObject response = Datacrack.getInstance().getSocketManager().getSource(SocketInstance.GetterAction.GETDATAPACK, path+","+name);
-        if(response == null){ return; }
+        JSONObject response = Datacrack.getInstance().getManager().getSource(SocketInstance.GetterAction.GETDATAPACK, path + "," + name);
+        if (response == null) {
+            return;
+        }
         this.json = response;
     }
 }
