@@ -12,57 +12,38 @@ import balbucio.datacrack.client.exception.DataNotExistsException;
 import balbucio.datacrack.client.exception.InvalidCredentialException;
 import balbucio.datacrack.client.exception.RequestErrorException;
 import balbucio.datacrack.client.exception.UserInsufficientPermissionException;
+import balbucio.datacrack.client.user.User;
 import co.gongzh.procbridge.Client;
+import co.gongzh.procbridge.TimeoutException;
 import org.json.JSONObject;
 
 import java.util.List;
 
-public class SocketInstance {
+public class SocketInstance extends Thread {
 
     private String ip;
     private int port;
     private Client client;
+    private User user;
+
+    private SetterAction action;
+    private Details details;
+
+    private static List<SocketInstance> sockets;
 
     public SocketInstance(String ip, int port){
         this.ip = ip;
         this.port = port;
         client = new Client(ip, port);
+        this.user = Datacrack.getInstance().getUser();
+        sockets.add(this);
     }
-
-    public JSONObject get(GetterAction action, String argument) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
-        JSONObject response = (JSONObject) client.request(action.toString().toLowerCase(), argument);
-        if(response == null) {
-            throw new RequestErrorException("O Client não conseguiu se comunicar com o "+ip+":"+port, action, argument);
-        }
-        if(response.has("erro") && !response.has("type")){
-            throw new RequestErrorException(response.getString("erroMessage"), action, argument);
-        }
-        if(response.has("erro") && response.getString("type").equalsIgnoreCase("UserInsufficientPermission")){
-            throw new UserInsufficientPermissionException(response.getString("erroMessage"), Datacrack.getInstance().getManager().getUserBySocket(this));
-        }
-        if(response.has("erro") && response.getString("type").equalsIgnoreCase("InvalidCredentialException")){
-            throw new InvalidCredentialException(response.getString("erroMessage"), Datacrack.getInstance().getManager().getUserBySocket(this));
-        }
-        if(response.has("erro") && response.getString("type").equalsIgnoreCase("TempDataNotExists")){
-            throw new DataNotExistsException(response.getString("erroMessage"), "");
-        }
-        return response;
-    }
-
-    public void update(SetterAction action, String argument) throws UserInsufficientPermissionException, RequestErrorException, InvalidCredentialException{
-        JSONObject response = (JSONObject) client.request(action.toString().toLowerCase(), argument);
-        if(response == null) {
-            throw new RequestErrorException("O Client não conseguiu se comunicar com o "+ip+":"+port, action, argument);
-        }
-        if(response.getBoolean("erro") && !response.has("type")){
-            throw new RequestErrorException(response.getString("erroMessage"), action, argument);
-        }
-        if(response.getBoolean("erro") && response.getString("type").equalsIgnoreCase("UserInsufficientPermission")){
-            throw new UserInsufficientPermissionException(response.getString("erroMessage"), Datacrack.getInstance().getManager().getUserBySocket(this));
-        }
-        if(response.has("erro") && response.getString("type").equalsIgnoreCase("InvalidCredentialException")){
-            throw new InvalidCredentialException(response.getString("erroMessage"), Datacrack.getInstance().getManager().getUserBySocket(this));
-        }
+    public SocketInstance(String ip, int port, User user){
+        this.ip = ip;
+        this.port = port;
+        client = new Client(ip, port);
+        this.user = user;
+        sockets.add(this);
     }
 
     public String getIp() {
@@ -71,6 +52,43 @@ public class SocketInstance {
 
     public int getPort() {
         return port;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public JSONObject sendSetterRequest(SetterAction action, Details details){
+        try{
+            return (JSONObject) client.request(action.toString().toLowerCase(), details.getRequestCommand());
+        }catch (TimeoutException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public JSONObject sendGetterRequest(GetterAction action, Details details){
+        try{
+            return (JSONObject) client.request(action.toString().toLowerCase(), details.getRequestCommand());
+        }catch (TimeoutException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static UpdateDetails update(SetterAction action, Details details){
+        UpdateDetails updetails = new UpdateDetails(action, details.getRequestCommand().toString());
+        for(SocketInstance socket : sockets){
+            updetails.addJsonResponse(socket, socket.sendSetterRequest(action, details));
+        }
+        return updetails;
+    }
+
+    public static GetDetails get(GetterAction action, Details details){
+        GetDetails getDetails = new GetDetails(action, details.getRequestCommand().toString());
+        for(SocketInstance socket : sockets){
+            getDetails.addJsonResponse(socket, socket.sendGetterRequest(action, details));
+        }
+        return getDetails;
     }
 
     public enum GetterAction{

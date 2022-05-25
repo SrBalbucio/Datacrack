@@ -5,8 +5,6 @@
  */
 
 package balbucio.datacrack.client;
-
-import balbucio.datacrack.client.options.Organization;
 import balbucio.datacrack.client.user.User;
 
 public class Datacrack {
@@ -14,8 +12,6 @@ public class Datacrack {
     private Manager manager;
     private User user;
     private static Datacrack instance;
-
-    private Organization orgazationOption = Organization.FIRST;
 
     public Datacrack(User admin){
         setInstance(this);
@@ -37,14 +33,6 @@ public class Datacrack {
 
     public User getUser(){
         return user;
-    }
-
-    public void setOrganizationOption(Organization organization){
-        this.orgazationOption = organization;
-    }
-
-    public Organization getOrgazationOption() {
-        return orgazationOption;
     }
 
 }

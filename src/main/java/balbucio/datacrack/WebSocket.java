@@ -44,7 +44,7 @@ public class WebSocket {
                             if (!Main.getConfig().getBoolean("pathEqualToUsernameAllow") && !user.getPermissions().contains("all.rootpack." + path) && !user.getPermissions().contains("read.rootpack." + path) && !user.isAdmin()) {
                                 return new JSONObject().put("erro", true).put("erroMessage", "Esse usuário não tem permissão para acessar esse RootDataPack!").put("type", "UserInsufficientPermission");
                             }
-                            if(Main.getConfig().getBoolean("pathEqualToUsernameAllow") && !path.equals(username)){
+                            if(Main.getConfig().getBoolean("pathEqualToUsernameAllow") && !path.equals(username) && !user.isAdmin()){
                                 return new JSONObject().put("erro", true).put("erroMessage", "Esse usuário não tem permissão para acessar esse DataPack!").put("type", "UserInsufficientPermission");
                             }
                             return DataManager.getRootPack(path);
@@ -53,8 +53,8 @@ public class WebSocket {
                             if (!Main.getConfig().getBoolean("pathEqualToUsernameAllow") && !user.getPermissions().contains("all.rootpack." + path) && !user.getPermissions().contains("write.rootpack." + path) && !user.isAdmin()) {
                                 return new JSONObject().put("erro", true).put("erroMessage", "Esse usuário não tem permissão para acessar esse RootDataPack!").put("type", "UserInsufficientPermission");
                             }
-                            if(Main.getConfig().getBoolean("pathEqualToUsernameAllow") && !path.equals(username)){
-                                return new JSONObject().put("erro", true).put("erroMessage", "Esse usuário não tem permissão para acessar esse DataPack!").put("type", "UserInsufficientPermission");
+                            if(Main.getConfig().getBoolean("pathEqualToUsernameAllow") && !path.equals(username) && !user.isAdmin()){
+                                return new JSONObject().put("erro", true).put("erroMessage", "Esse usuário não tem permissão para acessar esse RootDataPack!").put("type", "UserInsufficientPermission");
                             }
                             source = jsonPayload.getJSONObject("source");
                             DataManager.updateRootPack(path, source);
@@ -64,7 +64,7 @@ public class WebSocket {
                             if (!Main.getConfig().getBoolean("pathEqualToUsernameAllow") && !user.getPermissions().contains("all.datapack." + path.replace("/", ",")) && !user.getPermissions().contains("read.datapack." + path) && !user.isAdmin()) {
                                 return new JSONObject().put("erro", true).put("erroMessage", "Esse usuário não tem permissão para acessar esse DataPack!").put("type", "UserInsufficientPermission");
                             }
-                            if(Main.getConfig().getBoolean("pathEqualToUsernameAllow") && !path.equals(username)){
+                            if(Main.getConfig().getBoolean("pathEqualToUsernameAllow") && !path.equals(username) && !user.isAdmin()){
                                 return new JSONObject().put("erro", true).put("erroMessage", "Esse usuário não tem permissão para acessar esse DataPack!").put("type", "UserInsufficientPermission");
                             }
                             return DataManager.getDataPack(path);

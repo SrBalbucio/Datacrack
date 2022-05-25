@@ -6,14 +6,16 @@
 
 package balbucio.datacrack.client;
 
-import balbucio.datacrack.client.Datacrack;
 import balbucio.datacrack.client.data.RootDataPack;
 import balbucio.datacrack.client.data.TempDataPack;
 import balbucio.datacrack.client.exception.DataNotExistsException;
 import balbucio.datacrack.client.exception.InvalidCredentialException;
 import balbucio.datacrack.client.exception.RequestErrorException;
 import balbucio.datacrack.client.exception.UserInsufficientPermissionException;
+import balbucio.datacrack.client.socket.Details;
+import balbucio.datacrack.client.socket.GetDetails;
 import balbucio.datacrack.client.socket.SocketInstance;
+import balbucio.datacrack.client.socket.UpdateDetails;
 import balbucio.datacrack.client.user.User;
 import org.json.JSONObject;
 
@@ -49,7 +51,7 @@ public class Manager {
     }
 
     public void addSocket(String ip, int port, User socketUser){
-        SocketInstance socket = new SocketInstance(ip, port);
+        SocketInstance socket = new SocketInstance(ip, port, socketUser);
         sockets.add(socket);
         socketUsers.put(socket, socketUser);
     }
@@ -74,104 +76,65 @@ public class Manager {
 
     /** Método para gerenciar os RootDataPacks **/
 
-    public RootDataPack getDefaultRootPack() throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
-        JSONObject response;
-        switch(Datacrack.getInstance().getOrgazationOption()){
-            case FIRST:
-                response = getFirstSource(SocketInstance.GetterAction.GETROOTPATH, "root");
-                if(response == null){ return null; }
-                return new RootDataPack(response);
+    public RootDataPack getDefaultRootPack() throws Exception {
+        GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETROOTPATH, new Details(null, "root"));
+        if(details.hasError()){
+            for(Exception e : details.getErros().values()){
+                throw e;
+            }
         }
-        return null;
+        return new RootDataPack(details.getSource());
     }
 
-    public RootDataPack getRootPack(String name) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
-        JSONObject response;
-        switch(Datacrack.getInstance().getOrgazationOption()){
-            case FIRST:
-                response = getFirstSource(SocketInstance.GetterAction.GETROOTPATH, name);
-                if(response == null){ return null; }
-                return new RootDataPack(response);
+    public RootDataPack getRootPack(String name) throws Exception {
+        GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETROOTPATH, new Details(null, name));
+        if(details.hasError()){
+            for(Exception e : details.getErros().values()){
+                throw e;
+            }
         }
-        return null;
+        return new RootDataPack(details.getSource());
     }
 
-    public TempDataPack getTempPack(String name) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
-        JSONObject response;
-        switch(Datacrack.getInstance().getOrgazationOption()){
-            case FIRST:
-                response = getFirstSource(SocketInstance.GetterAction.GETTEMPDATA, name);
-                if(response == null){ return null; }
-                return new TempDataPack(response, name);
+    public TempDataPack getTempPack(String name) throws Exception {
+        GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETTEMPDATA, new Details(null, name));
+        if(details.hasError()){
+            for(Exception e : details.getErros().values()){
+                throw e;
+            }
         }
-        return null;
+        return new TempDataPack(details.getSource(), name);
     }
 
     public TempDataPack createTempPack(String name) throws RequestErrorException, InvalidCredentialException {
         return new TempDataPack(name);
     }
 
-    public boolean containsTempPack(String name) throws RequestErrorException, DataNotExistsException, UserInsufficientPermissionException, InvalidCredentialException {
-        return getSource(SocketInstance.GetterAction.HASTEMPDATA, name).getBoolean("contains");
+    public boolean containsTempPack(String name) throws Exception {
+        GetDetails details = SocketInstance.get(SocketInstance.GetterAction.HASTEMPDATA, new Details(null, name));
+        if(details.hasError()){
+            for(Exception e : details.getErros().values()){
+                throw e;
+            }
+        }
+        return details.getSource().getBoolean("contains");
     }
 
-    public void createNewUser(String name, String password, List<String> permissions) throws InvalidCredentialException, RequestErrorException, UserInsufficientPermissionException {
+    public void createNewUser(String name, String password, List<String> permissions) throws Exception {
         String list = "";
-        for(String s : permissions){
-            if(list.equalsIgnoreCase("")){
+        for (String s : permissions) {
+            if (list.equalsIgnoreCase("")) {
                 list = s;
-            } else{
-                list = list+","+s;
+            } else {
+                list = list + "," + s;
             }
         }
-        updateSource(SocketInstance.SetterAction.CREATENEWUSER, "null", new JSONObject().put("username", name).put("password", password).put("permissions", list));
-    }
-
-    /** Métodos para extrair o JSON **/
-
-    public JSONObject getSource(SocketInstance.GetterAction action, String name) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
-        switch(Datacrack.getInstance().getOrgazationOption()){
-            case FIRST:
-                return getFirstSource(action, name);
-        }
-        return null;
-    }
-
-    public void updateSource(SocketInstance.SetterAction action, String name, JSONObject source) throws UserInsufficientPermissionException, RequestErrorException, InvalidCredentialException {
-        for(SocketInstance socket : sockets){
-            socket.update(action, getCredential(socketUsers.get(socket), name).put("source", source).toString());
-        }
-    }
-
-    public void updateList(SocketInstance.SetterAction action, String name, List<String> source) throws UserInsufficientPermissionException, RequestErrorException, InvalidCredentialException {
-        for(SocketInstance socket : sockets){
-            socket.update(action, getCredential(socketUsers.get(socket), name).put("list", source).toString());
-        }
-    }
-
-    /** Métodos de Get do Socket **/
-
-    private JSONObject getFirstSource(SocketInstance.GetterAction action, String name) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
-        JSONObject response = null;
-        SocketInstance instance = null;
-        for(SocketInstance socket : sockets){
-            JSONObject sp = socket.get(action, getCredential(socketUsers.get(socket), name).toString());
-            if(sp != null && response == null){
-              response = sp;
-              instance = socket;
-              break;
+        UpdateDetails details = SocketInstance.update(SocketInstance.SetterAction.CREATENEWUSER, new Details(new JSONObject().put("username", name).put("password", password).put("permissions", list), ""));
+        if(details.hasError()){
+            for(Exception e : details.getErros().values()){
+                throw e;
             }
         }
-        return response;
     }
 
-
-    private JSONObject getCredential(User user, String pathName){
-        JSONObject json = new JSONObject();
-        json.put("username", user.getUsername());
-        json.put("password", user.getPassword());
-        json.put("uuid", user.getUUID().toString());
-        json.put("path", pathName);
-        return json;
-    }
 }

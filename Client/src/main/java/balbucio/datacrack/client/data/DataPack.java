@@ -8,11 +8,15 @@ package balbucio.datacrack.client.data;
 
 import balbucio.datacrack.client.Datacrack;
 import balbucio.datacrack.client.exception.*;
+import balbucio.datacrack.client.socket.Details;
+import balbucio.datacrack.client.socket.GetDetails;
 import balbucio.datacrack.client.socket.SocketInstance;
+import balbucio.datacrack.client.socket.UpdateDetails;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class DataPack {
@@ -33,9 +37,10 @@ public class DataPack {
         this.path = path;
         json.put("name", name);
         json.put("path", path);
+        json.put("datacrack_updateDate", new Date().getTime());
     }
 
-    public DataPack getDataPack(String name) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
+    public DataPack getDataPack(String name) throws Exception {
         reload();
         if (!json.has(name + "_datapack")) {
             throw new DataNotExistsException("O DataPack " + name + " não existe!", name);
@@ -43,7 +48,7 @@ public class DataPack {
         return new DataPack(json.getJSONObject(name + "_datapack"));
     }
 
-    public DataPack createDataPack(String name) throws UserInsufficientPermissionException, RequestErrorException, DataPackLimitException, DataNotExistsException, InvalidCredentialException {
+    public DataPack createDataPack(String name) throws Exception {
         reload();
         try {
             if (json.has(name + "_datapack")) {
@@ -60,56 +65,49 @@ public class DataPack {
         return pack;
     }
 
-    public DataPack set(String key, Object value) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
+    public UpdateDetails set(String key, Object value) throws Exception {
         reload();
         json.put(key, value);
-        update();
-        return this;
+        return update();
     }
 
-    public DataPack setString(String key, String value) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
+    public UpdateDetails setString(String key, String value) throws Exception {
         reload();
         json.put(key, value);
-        update();
-        return this;
+        return update();
     }
 
-    public DataPack setInt(String key, Integer value) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
+    public UpdateDetails setInt(String key, Integer value) throws Exception {
         reload();
         json.put(key, value);
-        update();
-        return this;
+        return update();
     }
 
-    public DataPack setFloat(String key, Float value) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
+    public UpdateDetails setFloat(String key, Float value) throws Exception {
         reload();
         json.put(key, value);
-        update();
-        return this;
+        return update();
     }
 
-    public DataPack setDouble(String key, Double value) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
+    public UpdateDetails setDouble(String key, Double value) throws Exception {
         reload();
         json.put(key, value);
-        update();
-        return this;
+        return update();
     }
 
-    public DataPack setLong(String key, Long value) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
+    public UpdateDetails setLong(String key, Long value) throws Exception {
         reload();
         json.put(key, value);
-        update();
-        return this;
+        return update();
     }
 
-    public DataPack setBoolean(String key, Boolean value) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
+    public UpdateDetails setBoolean(String key, Boolean value) throws Exception {
         reload();
         json.put(key, value);
-        update();
-        return this;
+        return update();
     }
 
-    public DataPack setStringList(String key, List<String> value) throws InvalidCredentialException, RequestErrorException, DataNotExistsException, UserInsufficientPermissionException {
+    public UpdateDetails setStringList(String key, List<String> value) throws Exception {
         reload();
         String list = "";
         for (String a : value) {
@@ -120,11 +118,10 @@ public class DataPack {
             }
         }
         json.put(key, list);
-        update();
-        return this;
+        return update();
     }
 
-    public Object get(String key) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
+    public Object get(String key) throws Exception {
         reload();
         if (!json.has(key)) {
             throw new DataNotExistsException("O Dado " + key + " não existe!", key);
@@ -132,7 +129,7 @@ public class DataPack {
         return json.get(key);
     }
 
-    public String getString(String key) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
+    public String getString(String key) throws Exception {
         reload();
         if (!json.has(key)) {
             throw new DataNotExistsException("O Dado " + key + " não existe!", key);
@@ -140,7 +137,7 @@ public class DataPack {
         return json.getString(key);
     }
 
-    public Integer getInt(String key) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
+    public Integer getInt(String key) throws Exception {
         reload();
         if (!json.has(key)) {
             throw new DataNotExistsException("O Dado " + key + " não existe!", key);
@@ -148,7 +145,7 @@ public class DataPack {
         return json.getInt(key);
     }
 
-    public Float getFloat(String key) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
+    public Float getFloat(String key) throws Exception {
         reload();
         if (!json.has(key)) {
             throw new DataNotExistsException("O Dado " + key + " não existe!", key);
@@ -156,7 +153,7 @@ public class DataPack {
         return json.getFloat(key);
     }
 
-    public Double getDouble(String key) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
+    public Double getDouble(String key) throws Exception {
         reload();
         if (!json.has(key)) {
             throw new DataNotExistsException("O Dado " + key + " não existe!", key);
@@ -164,7 +161,7 @@ public class DataPack {
         return json.getDouble(key);
     }
 
-    public Long getLong(String key) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
+    public Long getLong(String key) throws Exception {
         reload();
         if (!json.has(key)) {
             throw new DataNotExistsException("O Dado " + key + " não existe!", key);
@@ -172,7 +169,7 @@ public class DataPack {
         return json.getLong(key);
     }
 
-    public Boolean getBoolean(String key) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
+    public Boolean getBoolean(String key) throws Exception {
         reload();
         if (!json.has(key)) {
             throw new DataNotExistsException("O Dado " + key + " não existe!", key);
@@ -180,7 +177,7 @@ public class DataPack {
         return json.getBoolean(key);
     }
 
-    public List<String> getStringList(String key) throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
+    public List<String> getStringList(String key) throws Exception {
         reload();
         if (!json.has(key)) {
             throw new DataNotExistsException("O Dado " + key + " não existe!", key);
@@ -188,7 +185,7 @@ public class DataPack {
         return Arrays.asList(json.getString(key).split("-"));
     }
 
-    public List<DataPack> getAllDataPacks() throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
+    public List<DataPack> getAllDataPacks() throws Exception {
         reload();
         List<DataPack> dataPacks = new ArrayList<>();
         for (String key : json.keySet()) {
@@ -199,7 +196,7 @@ public class DataPack {
         return dataPacks;
     }
 
-    public boolean contains(String key) throws InvalidCredentialException, RequestErrorException, DataNotExistsException, UserInsufficientPermissionException {
+    public boolean contains(String key) throws Exception {
         reload();
         return json.has(key);
     }
@@ -216,15 +213,18 @@ public class DataPack {
         return json;
     }
 
-    public void update() throws UserInsufficientPermissionException, RequestErrorException, InvalidCredentialException {
-        Datacrack.getInstance().getManager().updateSource(SocketInstance.SetterAction.PUTDATAPACK, path + "/" + name, json);
+    public UpdateDetails update(){
+        json.put("datacrack_updateDate", new Date().getTime());
+        return SocketInstance.update(SocketInstance.SetterAction.PUTDATAPACK, new Details(json, path + "/" + name));
     }
 
-    public void reload() throws UserInsufficientPermissionException, RequestErrorException, DataNotExistsException, InvalidCredentialException {
-        JSONObject response = Datacrack.getInstance().getManager().getSource(SocketInstance.GetterAction.GETDATAPACK, path + "," + name);
-        if (response == null) {
-            return;
+    public void reload() throws Exception {
+        GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETDATAPACK, new Details(json, path + "," + name));
+        if(details.hasError()){
+            for(Exception e : details.getErros().values()){
+                throw e;
+            }
         }
-        this.json = response;
+        this.json = details.getSource();
     }
 }
