@@ -43,7 +43,7 @@ Se você usa gradle:
 	        implementation 'com.github.SrBalbucio:Datacrack:Tag'
 	}
  ```
-Se você use maven:
+Se você usa maven:
 ```maven
 	<repositories>
 		<repository>
@@ -51,6 +51,7 @@ Se você use maven:
 		    <url>https://jitpack.io</url>
 		</repository>
 	</repositories>
+	
 	<dependency>
 	    <groupId>com.github.SrBalbucio</groupId>
 	    <artifactId>Datacrack</artifactId>
