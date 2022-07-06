@@ -185,6 +185,31 @@ public class TempDataPack {
         return data.setCustomData(values);
     }
 
+    public Map<String, String> getStringMap(String key){
+        reload();
+        Map<String, String> map = new HashMap<>();
+        String[] mapString = json.getString(key).split("&&");
+        for(String k : mapString){
+            String[] ops = k.split(":");
+            map.put(ops[0], ops[1]);
+        }
+        return map;
+    }
+
+    public UpdateDetails setStringMap(String key, Map<String, String> map){
+        reload();
+        String mapString = "<null-not>";
+        for(String k : map.keySet()){
+            if(mapString.equalsIgnoreCase("<null-not>")){
+                mapString = k+":"+map.get(k);
+            } else{
+                mapString += "&&"+ k+":"+map.get(k);
+            }
+        }
+        json.put(key, mapString);
+        return update();
+    }
+
     public boolean contains(String key) throws Exception {
         reload();
         return json.has(key);
@@ -204,7 +229,7 @@ public class TempDataPack {
         return SocketInstance.update(SocketInstance.SetterAction.PUTTEMPDATA, new Details(json, name), manager);
     }
 
-    public void reload() throws Exception {
+    public void reload() {
         GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETTEMPDATA, new Details(json, name), manager);
         this.json = details.getSource();
     }

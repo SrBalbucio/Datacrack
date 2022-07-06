@@ -160,6 +160,31 @@ public class UserDataPack {
         return data.setCustomData(values);
     }
 
+    public Map<String, String> getStringMap(String key){
+        reload();
+        Map<String, String> map = new HashMap<>();
+        String[] mapString = json.getString(key).split("&&");
+        for(String k : mapString){
+            String[] ops = k.split(":");
+            map.put(ops[0], ops[1]);
+        }
+        return map;
+    }
+
+    public UpdateDetails setStringMap(String key, Map<String, String> map){
+        reload();
+        String mapString = "<null-not>";
+        for(String k : map.keySet()){
+            if(mapString.equalsIgnoreCase("<null-not>")){
+                mapString = k+":"+map.get(k);
+            } else{
+                mapString += "&&"+ k+":"+map.get(k);
+            }
+        }
+        json.put(key, mapString);
+        return update();
+    }
+
     public boolean contains(String key)  {
         reload();
         return json.has(key);
