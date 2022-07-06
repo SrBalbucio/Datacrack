@@ -76,21 +76,11 @@ public class Manager {
 
     public RootDataPack getDefaultRootPack() throws Exception {
         GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETROOTPATH, new Details(null, "root"), this);
-        if(details.hasError()){
-            for(Exception e : details.getErros().values()){
-                throw e;
-            }
-        }
         return new RootDataPack(details.getSource(), this);
     }
 
     public RootDataPack getRootPack(String name) throws Exception {
         GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETROOTPATH, new Details(null, name), this);
-        if(details.hasError()){
-            for(Exception e : details.getErros().values()){
-                throw e;
-            }
-        }
         return new RootDataPack(details.getSource(), this);
     }
 
@@ -100,11 +90,6 @@ public class Manager {
 
     public TempDataPack getTempPack(String name) throws Exception {
         GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETTEMPDATA, new Details(null, name), this);
-        if(details.hasError()){
-            for(Exception e : details.getErros().values()){
-                throw e;
-            }
-        }
         return new TempDataPack(details.getSource(), name, this);
     }
 
@@ -114,11 +99,6 @@ public class Manager {
 
     public boolean containsTempPack(String name) throws Exception {
         GetDetails details = SocketInstance.get(SocketInstance.GetterAction.HASTEMPDATA, new Details(null, name), this);
-        if(details.hasError()){
-            for(Exception e : details.getErros().values()){
-                throw e;
-            }
-        }
         return details.getSource().getBoolean("contains");
     }
 
@@ -132,11 +112,6 @@ public class Manager {
             }
         }
         UpdateDetails details = SocketInstance.update(SocketInstance.SetterAction.CREATENEWUSER, new Details(new JSONObject().put("username", name).put("password", password).put("permissions", list), ""), this);
-        if(details.hasError()){
-            for(Exception e : details.getErros().values()){
-                throw e;
-            }
-        }
     }
 
 }
