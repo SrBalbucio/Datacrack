@@ -55,7 +55,7 @@ Se você usa maven:
 	<dependency>
 	    <groupId>com.github.SrBalbucio</groupId>
 	    <artifactId>Datacrack</artifactId>
-	    <version>v1.0</version>
+	    <version>v1.2-FIX</version>
 	</dependency>
 ```
 
