@@ -178,15 +178,6 @@ public class UserDataPack {
     public void reload() {
         CompletableFuture.runAsync(() -> {
             GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETTEMPDATA, new Details(json, user.getUUID().toString()), manager);
-            if (details.hasError()) {
-                for (Exception e : details.getErros().values()) {
-                    try {
-                        throw e;
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            }
             this.json = details.getSource();
         });
     }

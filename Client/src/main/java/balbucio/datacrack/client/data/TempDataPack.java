@@ -206,11 +206,6 @@ public class TempDataPack {
 
     public void reload() throws Exception {
         GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETTEMPDATA, new Details(json, name), manager);
-        if(details.hasError()){
-            for(Exception e : details.getErros().values()){
-                throw e;
-            }
-        }
         this.json = details.getSource();
     }
 }

@@ -270,15 +270,6 @@ public class DataPack {
     public void reload() {
         CompletableFuture.runAsync(() -> {
             GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETTEMPDATA, new Details(json, path + "/" + name), manager);
-            if (details.hasError()) {
-                for (Exception e : details.getErros().values()) {
-                    try {
-                        throw e;
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            }
             this.json = details.getSource();
         });
     }

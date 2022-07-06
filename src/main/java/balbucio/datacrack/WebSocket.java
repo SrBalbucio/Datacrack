@@ -154,7 +154,7 @@ public class WebSocket {
                 return new JSONObject().put("erro", true).put("erroMessage", "Não foi possível concluir o request.");
             }
         });
-        System.out.print("\nO Datacrack está pronto para receber conexõe.s\nPorta de conexão: "+server.getPort()+"\n");
+        System.out.print("\nO Datacrack está pronto para receber conexões.\nPorta de conexão: "+server.getPort()+"\n");
         server.start();
     }
 }
