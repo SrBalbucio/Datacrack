@@ -269,7 +269,7 @@ public class DataPack {
 
     public void reload() {
         CompletableFuture.runAsync(() -> {
-            GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETTEMPDATA, new Details(json, path + "/" + name), manager);
+            GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETDATAPACK, new Details(json, path + "/" + name), manager);
             this.json = details.getSource();
         });
     }

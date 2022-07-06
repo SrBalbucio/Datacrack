@@ -236,7 +236,7 @@ public class RootDataPack {
 
     public void reload() {
         CompletableFuture.runAsync(() -> {
-            GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETTEMPDATA, new Details(json, name), manager);
+            GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETROOTPATH, new Details(json, name), manager);
             this.json = details.getSource();
         });
     }

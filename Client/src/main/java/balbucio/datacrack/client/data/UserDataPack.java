@@ -172,12 +172,12 @@ public class UserDataPack {
     
     public UpdateDetails update() {
         json.put("datacrack_updateDate", new Date().getTime());
-        return SocketInstance.update(SocketInstance.SetterAction.PUTTEMPDATA, new Details(json, user.getUUID().toString()), manager);
+        return SocketInstance.update(SocketInstance.SetterAction.PUTUSERPACK, new Details(json, user.getUUID().toString()), manager);
     }
 
     public void reload() {
         CompletableFuture.runAsync(() -> {
-            GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETTEMPDATA, new Details(json, user.getUUID().toString()), manager);
+            GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETUSERPACK, new Details(json, user.getUUID().toString()), manager);
             this.json = details.getSource();
         });
     }
