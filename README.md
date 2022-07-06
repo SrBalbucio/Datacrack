@@ -29,6 +29,35 @@ Para **donos de hospedagem** que pretendem criar servidores datacrack em escala 
 # Usando o Datacrack Client
 Vamos começar a codar e por o Datacrack em prática, você verá o quão simples é:
 
+## Adicionando as dependências
+Se você usa gradle:
+```gradle
+	allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+  
+  dependencies {
+	        implementation 'com.github.SrBalbucio:Datacrack:Tag'
+	}
+ ```
+Se você use maven:
+```maven
+	<repositories>
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+	<dependency>
+	    <groupId>com.github.SrBalbucio</groupId>
+	    <artifactId>Datacrack</artifactId>
+	    <version>v1.0</version>
+	</dependency>
+```
+
 ## Criando uma instância do Datacrack
 Para você começar a usar o Datacrack, primeiro você deve criar um, como mostrado abaixo:
 ```java
