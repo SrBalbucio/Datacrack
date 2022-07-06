@@ -10,11 +10,13 @@ import balbucio.datacrack.users.UserManager;
 import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.nio.file.Files;
+import java.util.Scanner;
 
 public class Main {
 
     private static Main instance;
     private static String[] arguments;
+    private static String version = "v1.2";
 
     private WebSocket socket;
     private UserManager userManager;
@@ -30,6 +32,7 @@ public class Main {
 
     public Main() {
         setInstance(this);
+        System.out.print("Datacrack "+version+" - Criado por SrBalbucio!\n---------------------------------------------------------\n");
         System.out.print("Datacrack iniciado com sucesso!");
         loadConfigurations();
         userManager = new UserManager(usuarios, users);

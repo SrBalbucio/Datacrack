@@ -19,6 +19,14 @@ public class Datacrack {
         this.manager = new Manager();
     }
 
+    public Datacrack(User admin, boolean notInstance){
+        if(!notInstance) {
+            setInstance(this);
+        }
+        this.user = admin;
+        this.manager = new Manager();
+    }
+
     public static Datacrack getInstance() {
         return instance;
     }

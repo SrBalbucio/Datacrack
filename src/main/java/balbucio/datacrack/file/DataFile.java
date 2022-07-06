@@ -3,6 +3,7 @@ package balbucio.datacrack.file;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.util.Date;
 
 public class DataFile {
 
@@ -17,7 +18,8 @@ public class DataFile {
                     folder.mkdir();
                 }
                 file.createNewFile();
-                save(new JSONObject().put("Name", name).toString());
+                Date date = new Date();
+                save(new JSONObject().put("datacrack_Name", name).put("datacrack_updateDate", date.getTime()).toString());
             }
         } catch(Exception e){
             e.printStackTrace();

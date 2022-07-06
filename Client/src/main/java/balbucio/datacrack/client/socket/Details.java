@@ -6,12 +6,13 @@
 
 package balbucio.datacrack.client.socket;
 
+import balbucio.datacrack.client.Datacrack;
 import balbucio.datacrack.client.user.User;
 import org.json.JSONObject;
 
 public class Details {
 
-    private User user;
+    private User user = Datacrack.getInstance().getUser();
     private JSONObject json;
     private String path;
 
@@ -50,6 +51,7 @@ public class Details {
         json.put("password", user.getPassword());
         json.put("uuid", user.getUUID().toString());
         json.put("path", path);
+        json.put("source", this.json);
         return json;
     }
 }

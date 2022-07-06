@@ -7,6 +7,8 @@
 package balbucio.datacrack.client.data;
 
 import balbucio.datacrack.client.Datacrack;
+import balbucio.datacrack.client.Manager;
+import balbucio.datacrack.client.data.custom.CustomData;
 import balbucio.datacrack.client.exception.DataNotExistsException;
 import balbucio.datacrack.client.exception.InvalidCredentialException;
 import balbucio.datacrack.client.exception.RequestErrorException;
@@ -17,25 +19,26 @@ import balbucio.datacrack.client.socket.SocketInstance;
 import balbucio.datacrack.client.socket.UpdateDetails;
 import org.json.JSONObject;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class TempDataPack {
 
     private JSONObject json;
     private String name;
+    private Manager manager;
 
-    public TempDataPack(String name){
+    public TempDataPack(String name, Manager manager){
         this.json = new JSONObject();
         this.name = name;
+        this.manager = manager;
         json.put("datacrack_updateDate", new Date().getTime());
         update();
     }
 
-    public TempDataPack(JSONObject json, String name) {
+    public TempDataPack(JSONObject json, String name, Manager manager) {
         this.json = json;
         this.name = name;
+        this.manager = manager;
     }
 
     public UpdateDetails set(String key, Object value) throws Exception {
@@ -91,6 +94,16 @@ public class TempDataPack {
             }
         }
         json.put(key, list);
+        return update();
+    }
+
+    public UpdateDetails setCustomData(String key, CustomData value) throws Exception {
+        reload();
+        JSONObject js = new JSONObject();
+        for(String k : value.getCustomData().keySet()){
+            js.put(k, value.getCustomData().get(k));
+        }
+        json.put("customdata_"+key+"_"+value.getClass().getCanonicalName(), js);
         return update();
     }
 
@@ -159,9 +172,27 @@ public class TempDataPack {
         return Arrays.asList(json.getString(key).split("-"));
     }
 
+    public CustomData getCustomData(String key, CustomData data) throws Exception {
+        reload();
+        if(!containsCustomData(key, data.getClass())){
+            throw new DataNotExistsException("O Dado "+key+" não existe!", key);
+        }
+        JSONObject js = json.getJSONObject("customdata_"+key+"_"+data.getClass().getCanonicalName());
+        Map<String, Object> values = new HashMap<>();
+        for(String k : js.keySet()){
+            values.put(key, js.get(k));
+        }
+        return data.setCustomData(values);
+    }
+
     public boolean contains(String key) throws Exception {
         reload();
         return json.has(key);
+    }
+
+    public boolean containsCustomData(String key, Class dataType) throws Exception {
+        reload();
+        return json.has("customdata_"+key+"_"+dataType.getCanonicalName());
     }
 
     public String getName() {
@@ -170,11 +201,11 @@ public class TempDataPack {
 
     public UpdateDetails update() {
         json.put("datacrack_updateDate", new Date().getTime());
-        return SocketInstance.update(SocketInstance.SetterAction.PUTTEMPDATA, new Details(json, name));
+        return SocketInstance.update(SocketInstance.SetterAction.PUTTEMPDATA, new Details(json, name), manager);
     }
 
     public void reload() throws Exception {
-        GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETTEMPDATA, new Details(json, name));
+        GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETTEMPDATA, new Details(json, name), manager);
         if(details.hasError()){
             for(Exception e : details.getErros().values()){
                 throw e;

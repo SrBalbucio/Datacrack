@@ -7,6 +7,8 @@
 package balbucio.datacrack.client.data;
 
 import balbucio.datacrack.client.Datacrack;
+import balbucio.datacrack.client.Manager;
+import balbucio.datacrack.client.data.custom.CustomData;
 import balbucio.datacrack.client.exception.*;
 import balbucio.datacrack.client.socket.Details;
 import balbucio.datacrack.client.socket.GetDetails;
@@ -14,29 +16,30 @@ import balbucio.datacrack.client.socket.SocketInstance;
 import balbucio.datacrack.client.socket.UpdateDetails;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class DataPack {
 
     private JSONObject json;
     private String name;
     private String path;
+    private Manager manager;
 
-    public DataPack(JSONObject json) {
+    public DataPack(JSONObject json, Manager manager) {
         this.json = json;
-        this.name = json.getString("name");
-        this.path = json.getString("path");
+        this.name = json.getString("datacrack_name");
+        this.path = json.getString("datacrack_path");
+        this.manager = manager;
     }
 
-    public DataPack(String name, String path) {
+    public DataPack(String name, String path, Manager manager) {
         this.json = new JSONObject();
         this.name = name;
         this.path = path;
-        json.put("name", name);
-        json.put("path", path);
+        this.manager = manager;
+        json.put("datacrack_name", name);
+        json.put("datacrack_path", path);
         json.put("datacrack_updateDate", new Date().getTime());
     }
 
@@ -45,7 +48,7 @@ public class DataPack {
         if (!json.has(name + "_datapack")) {
             throw new DataNotExistsException("O DataPack " + name + " não existe!", name);
         }
-        return new DataPack(json.getJSONObject(name + "_datapack"));
+        return new DataPack(json.getJSONObject(name + "_datapack"), manager);
     }
 
     public DataPack createDataPack(String name) throws Exception {
@@ -59,7 +62,7 @@ public class DataPack {
         if (this.path.split(",").length == 2) {
             throw new DataPackLimitException("O DataPack não pode ser criado dentro de 2 outros DataPacks.", name);
         }
-        DataPack pack = new DataPack(name, this.path + "," + this.name);
+        DataPack pack = new DataPack(name, this.path + "," + this.name, manager);
         json.put(name + "_datapack", pack.getSource());
         update();
         return pack;
@@ -118,6 +121,16 @@ public class DataPack {
             }
         }
         json.put(key, list);
+        return update();
+    }
+
+    public UpdateDetails setCustomData(String key, CustomData value) throws Exception {
+        reload();
+        JSONObject js = new JSONObject();
+        for(String k : value.getCustomData().keySet()){
+            js.put(k, value.getCustomData().get(k));
+        }
+        json.put("customdata_"+key+"_"+value.getClass().getCanonicalName(), js);
         return update();
     }
 
@@ -190,16 +203,52 @@ public class DataPack {
         List<DataPack> dataPacks = new ArrayList<>();
         for (String key : json.keySet()) {
             if (key.contains("_datapack")) {
-                dataPacks.add(new DataPack(json.getJSONObject(key)));
+                dataPacks.add(new DataPack(json.getJSONObject(key), manager));
             }
         }
         return dataPacks;
+    }
+
+    public CustomData getCustomData(String key, CustomData data) throws Exception {
+        reload();
+        if(!containsCustomData(key, data.getClass())){
+            throw new DataNotExistsException("O Dado "+key+" não existe!", key);
+        }
+        JSONObject js = json.getJSONObject("customdata_"+key+"_"+data.getClass().getCanonicalName());
+        Map<String, Object> values = new HashMap<>();
+        for(String k : js.keySet()){
+            values.put(key, js.get(k));
+        }
+        return data.setCustomData(values);
     }
 
     public boolean contains(String key) throws Exception {
         reload();
         return json.has(key);
     }
+
+    public boolean containsCustomData(String key, Class dataType) throws Exception {
+        reload();
+        return json.has("customdata_"+key+"_"+dataType.getCanonicalName());
+    }
+
+    public boolean containsDataPack(String key){
+        reload();
+        return json.has(key+"_datapack");
+    }
+
+    public UpdateDetails delete(String key){
+        reload();
+        json.put(key, (Object) null);
+        return update();
+    }
+
+    public UpdateDetails remove(String key){
+        reload();
+        json.put(key, (Object) null);
+        return update();
+    }
+
 
     public String getName() {
         return name;
@@ -215,16 +264,22 @@ public class DataPack {
 
     public UpdateDetails update(){
         json.put("datacrack_updateDate", new Date().getTime());
-        return SocketInstance.update(SocketInstance.SetterAction.PUTDATAPACK, new Details(json, path + "/" + name));
+        return SocketInstance.update(SocketInstance.SetterAction.PUTDATAPACK, new Details(json, path + "," + name), manager);
     }
 
-    public void reload() throws Exception {
-        GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETDATAPACK, new Details(json, path + "," + name));
-        if(details.hasError()){
-            for(Exception e : details.getErros().values()){
-                throw e;
+    public void reload() {
+        CompletableFuture.runAsync(() -> {
+            GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETTEMPDATA, new Details(json, path + "/" + name), manager);
+            if (details.hasError()) {
+                for (Exception e : details.getErros().values()) {
+                    try {
+                        throw e;
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
             }
-        }
-        this.json = details.getSource();
+            this.json = details.getSource();
+        });
     }
 }

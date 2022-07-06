@@ -8,10 +8,8 @@ package balbucio.datacrack.client;
 
 import balbucio.datacrack.client.data.RootDataPack;
 import balbucio.datacrack.client.data.TempDataPack;
-import balbucio.datacrack.client.exception.DataNotExistsException;
 import balbucio.datacrack.client.exception.InvalidCredentialException;
 import balbucio.datacrack.client.exception.RequestErrorException;
-import balbucio.datacrack.client.exception.UserInsufficientPermissionException;
 import balbucio.datacrack.client.socket.Details;
 import balbucio.datacrack.client.socket.GetDetails;
 import balbucio.datacrack.client.socket.SocketInstance;
@@ -77,41 +75,45 @@ public class Manager {
     /** Método para gerenciar os RootDataPacks **/
 
     public RootDataPack getDefaultRootPack() throws Exception {
-        GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETROOTPATH, new Details(null, "root"));
+        GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETROOTPATH, new Details(null, "root"), this);
         if(details.hasError()){
             for(Exception e : details.getErros().values()){
                 throw e;
             }
         }
-        return new RootDataPack(details.getSource());
+        return new RootDataPack(details.getSource(), this);
     }
 
     public RootDataPack getRootPack(String name) throws Exception {
-        GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETROOTPATH, new Details(null, name));
+        GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETROOTPATH, new Details(null, name), this);
         if(details.hasError()){
             for(Exception e : details.getErros().values()){
                 throw e;
             }
         }
-        return new RootDataPack(details.getSource());
+        return new RootDataPack(details.getSource(), this);
+    }
+
+    public UpdateDetails deleteRootPack(String name){
+        return SocketInstance.update(SocketInstance.SetterAction.DELETEROOTPATH, new Details(null, name), this);
     }
 
     public TempDataPack getTempPack(String name) throws Exception {
-        GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETTEMPDATA, new Details(null, name));
+        GetDetails details = SocketInstance.get(SocketInstance.GetterAction.GETTEMPDATA, new Details(null, name), this);
         if(details.hasError()){
             for(Exception e : details.getErros().values()){
                 throw e;
             }
         }
-        return new TempDataPack(details.getSource(), name);
+        return new TempDataPack(details.getSource(), name, this);
     }
 
     public TempDataPack createTempPack(String name) throws RequestErrorException, InvalidCredentialException {
-        return new TempDataPack(name);
+        return new TempDataPack(name, this);
     }
 
     public boolean containsTempPack(String name) throws Exception {
-        GetDetails details = SocketInstance.get(SocketInstance.GetterAction.HASTEMPDATA, new Details(null, name));
+        GetDetails details = SocketInstance.get(SocketInstance.GetterAction.HASTEMPDATA, new Details(null, name), this);
         if(details.hasError()){
             for(Exception e : details.getErros().values()){
                 throw e;
@@ -129,7 +131,7 @@ public class Manager {
                 list = list + "," + s;
             }
         }
-        UpdateDetails details = SocketInstance.update(SocketInstance.SetterAction.CREATENEWUSER, new Details(new JSONObject().put("username", name).put("password", password).put("permissions", list), ""));
+        UpdateDetails details = SocketInstance.update(SocketInstance.SetterAction.CREATENEWUSER, new Details(new JSONObject().put("username", name).put("password", password).put("permissions", list), ""), this);
         if(details.hasError()){
             for(Exception e : details.getErros().values()){
                 throw e;

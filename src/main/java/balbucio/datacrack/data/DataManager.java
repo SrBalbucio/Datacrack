@@ -26,6 +26,11 @@ public class DataManager {
         data.save(obj.toString());
     }
 
+    public static void deleteRootPack(String name){
+        File file = new File("RootDataPacks", name+".json");
+        file.delete();
+    }
+
     public static JSONObject getDataPack(String path){
         String[] pathSplit = path.split(",");
         String rootPath = pathSplit[0];

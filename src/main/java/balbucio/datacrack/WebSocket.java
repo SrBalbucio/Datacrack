@@ -25,7 +25,7 @@ public class WebSocket {
             @Override
             public @Nullable Object handleRequest(@Nullable String method, @Nullable Object payload) {
                 try {
-                    JSONObject jsonPayload = new JSONObject((String) payload);
+                    JSONObject jsonPayload = (JSONObject) payload;
                     String username = jsonPayload.getString("username");
                     String uuid = jsonPayload.getString("uuid");
                     if(!Main.getInstance().getUserManager().containsUser(username)){
@@ -137,6 +137,13 @@ public class WebSocket {
                             }
                             DataManager.updateListDataPack(path, (List<String>) jsonPayload.get("list"));
                             return new JSONObject().put("erro", false);
+                        case "deleterootpath":
+                            System.out.print("\nUm request DELETE ROOT (" + path + ") foi executado por " + username + ".");
+                            if (!user.getPermissions().contains("all.listpack." + path) && !user.isAdmin()) {
+                                return new JSONObject().put("erro", true).put("erroMessage", "Esse usuário não tem permissão para acessar esse RootDataPack!").put("type", "UserInsufficientPermission");
+                            }
+                            DataManager.deleteRootPack(path);
+                            return new JSONObject().put("erro", false);
                     }
                 } catch (Exception e){
                     e.printStackTrace();
@@ -147,7 +154,7 @@ public class WebSocket {
                 return new JSONObject().put("erro", true).put("erroMessage", "Não foi possível concluir o request.");
             }
         });
-        System.out.print("\nO Datacrack está pronto para conexões\nPorta de conexão: "+server.getPort());
+        System.out.print("\nO Datacrack está pronto para receber conexõe.s\nPorta de conexão: "+server.getPort()+"\n");
         server.start();
     }
 }

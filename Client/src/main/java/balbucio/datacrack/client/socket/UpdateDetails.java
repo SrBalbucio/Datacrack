@@ -47,6 +47,7 @@ public class UpdateDetails {
                 Exception e = null;
                 if (!json.has("type")) {
                     e = new RequestErrorException(json.getString("erroMessage"), action, updateArgument);
+                    return;
                 }
                 String type = json.getString("type");
                 if (type.equalsIgnoreCase("UserInsufficientPermission")) {

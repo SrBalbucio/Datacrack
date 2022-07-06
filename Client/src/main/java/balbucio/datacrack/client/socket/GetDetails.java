@@ -59,6 +59,9 @@ public class GetDetails {
     public JSONObject getSource(){
         JSONObject recent = null;
         Date dateRecent = null;
+        if(getSources().size() == 1 && !getSources().isEmpty()){
+            return getSources().stream().findFirst().get();
+        }
         for(JSONObject json : getSources()){
             if(recent == null) {
                 recent = json;
@@ -87,6 +90,7 @@ public class GetDetails {
                 Exception e = null;
                 if (!json.has("type")) {
                     e = new RequestErrorException(json.getString("erroMessage"), action, getArgument);
+                    return;
                 }
                 String type = json.getString("type");
                 if (type.equalsIgnoreCase("UserInsufficientPermission")) {

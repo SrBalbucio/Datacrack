@@ -1,0 +1,12 @@
+#Datacrack Configuration - Criado por SrBalbucio (o brabo)
+
+#Socket Section - Configurações relacionadas ao Socket (Server)
+Socket:
+  Porta: 25565 #Porta de conexão
+
+#DataPack Section - Configurações adicionais relacionadas aos DataPacks
+
+#Se ativo, quando o DataPack/RootDataPack for igual ao Username ele automaticamente vai liberar e as permissões
+#de User serão ignoradas, ou seja, ele apenas vai responder se o nome do DataPack/RootDataPack for igual ao Username
+#do usuário.
+pathEqualToUsernameAllow: false
